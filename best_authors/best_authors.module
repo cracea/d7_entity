@@ -8,10 +8,15 @@
  * Entities list [entity_name] [label]
  * @return array
  */
-function best_authors_entity_list(){
-  return array(
+function best_authors_entity_list($type = NULL){
+  // define enties
+  $entities =  array(
     'best_authors' => t('Best Authors')
   );
+  // return entity by type
+  if (!empty($type)){return $entities[$type];}
+
+  return $entities;
 }
 
 /**
@@ -47,6 +52,10 @@ function best_authors_entity_info() {
   $entities = best_authors_entity_list();
 
   foreach ($entities as $type => $name) {
+    // change type value to nice urls
+    $type_uri = str_replace('_', '-', $type);
+
+    // entity info
     $entity[$type] = array(
       'label' => $name,
       'entity class' => _best_author_entity_class_name($type),
@@ -62,8 +71,8 @@ function best_authors_entity_info() {
         $type => array(
           'label' => $name,
           'admin' => array(
-            'path' => 'admin/structure/best-authors/' . $type,
-            'real path' => 'admin/structure/best-authors/' . $type,
+            'path' => 'admin/structure/' . $type_uri,
+            'real path' => 'admin/structure/' . $type_uri,
             'bundle argument' => 3,
           ),
         ),
@@ -134,18 +143,22 @@ function best_authors_entities_access($op, $entity, $account = NULL, $entity_typ
 function best_authors_menu() {
   $items = array();
 
-  //get all module entities
+  // get all module entities
   $entities =best_authors_entity_list();
 
   //create default menu paths for each entity
   foreach ($entities as $type => $name){
+    // change type value to nice urls
+    $type_uri = str_replace('_', '-', $type);
 
-    $items['admin/structure/best-authors/' . $type] = array(
-      'title' => $name,
-      'description' => 'Manage ' . $name . ' fields',
+    // manage entity fields
+    $items['admin/structure/' . $type_uri] = array(
+      'title' => 'Manage ' . $name . ' Fields',
+      'description' => 'Manage fields for ' . $name,
       'access arguments' => array('administer site'),
-      'page callback' => 't',
-      'page arguments' => array($name . ' fields'),
+      'page callback' => 'best_authors_admin_list_page',
+      'page arguments' => array($type),
+      'file' => 'best_authors.pages.inc',
     );
   }
 
