@@ -1,0 +1,10 @@
+name = FIAP Best Authors
+description = FIAP Best Authors
+package = FIAP
+core = 7.x
+version = 7.x-1.0
+
+dependencies[] = entity
+
+
+files[] = entities/best_authors/class.BestAuthorsController.php

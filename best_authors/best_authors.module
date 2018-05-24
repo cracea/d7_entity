@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * Best Authors module
+ */
+
+/**
+ * Entities list [entity_name] [label]
+ * @return array
+ */
+function best_authors_entity_list(){
+  return array(
+    'best_authors' => t('Best Authors')
+  );
+}
+
+/**
+ * Helper function to generate entity class name based on entity type
+ */
+function _best_author_entity_class_name($type) {
+  $segments = explode('_', $type);
+  $segments = array_map('ucfirst', $segments);
+  return implode('', $segments);
+}
+
+/**
+ * Implements hook_permission().
+ */
+function best_authors_permission() {
+  $permissions = array();
+
+  $permissions['upload best authors images'] = array(
+    'title' => t('Upload Best Authors Images'),
+    'description' => t('Allow users to upload Salon images as Best Authors'),
+    'restrict access' => TRUE,
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function best_authors_entity_info() {
+  $entity = array();
+
+  $entities = best_authors_entity_list();
+
+  foreach ($entities as $type => $name) {
+    $entity[$type] = array(
+      'label' => $name,
+      'entity class' => _best_author_entity_class_name($type),
+      'controller class' => _best_author_entity_class_name($type) . 'Controller',
+      'base table' => $type,
+      'revision table' => $type . '_revision',
+      'fieldable' => TRUE,
+      'entity keys' => array(
+        'id' => 'id',
+        'revision' => 'vid',
+      ),
+      'bundles' => array(
+        $type => array(
+          'label' => $name,
+          'admin' => array(
+            'path' => 'admin/structure/best-authors/' . $type,
+            'real path' => 'admin/structure/best-authors/' . $type,
+            'bundle argument' => 3,
+          ),
+        ),
+      ),
+      'label callback' => 'entity_class_label',
+      'uri callback' => 'entity_class_uri',
+      'load hook' => $type . '_load',
+      'access callback' => 'best_authors_entities_access',
+      'module' => 'best_authors',
+      'view modes' => array(
+        'full' => array(
+          'label' => t('Full content'),
+          'custom settings' => FALSE,
+        ),
+        'compact' => array(
+          'label' => t('Compact'),
+          'custom settings' => TRUE,
+        ),
+      ),
+
+    );
+  }
+
+  return $entity;
+}
+
+/**
+ * Load callback for entities.
+ */
+function best_authors_load($id, $conditions = array(), $reset = FALSE) {
+  return entity_load('best_authors', $id, $conditions = array(), $reset = FALSE);
+}
+
+/**
+ * Render callback for entities.
+ */
+function best_authors_view($entity, $view_mode = 'full') {
+  return entity_view('best_authors', array(entity_id('best_authors', $entity) => $entity), $view_mode);
+}
+
+/**
+ * Access callback for entities.
+ */
+function best_authors_entities_access($op, $entity, $account = NULL, $entity_type = NULL) {
+  global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  switch ($op) {
+    case 'create':
+      return user_access('create ' . $entity_type . ' entities');
+    case 'view':
+      return user_access('view ' . $entity_type . ' entities');
+    case 'edit':
+    case 'update':
+      return user_access('edit' . $entity_type . ' entities');
+    case 'delete':
+      return user_access('delete' . $entity_type . ' entities');
+
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function best_authors_menu() {
+  $items = array();
+
+  //get all module entities
+  $entities =best_authors_entity_list();
+
+  //create default menu paths for each entity
+  foreach ($entities as $type => $name){
+
+    $items['admin/structure/best-authors/' . $type] = array(
+      'title' => $name,
+      'description' => 'Manage ' . $name . ' fields',
+      'access arguments' => array('administer site'),
+      'page callback' => 't',
+      'page arguments' => array($name . ' fields'),
+    );
+  }
+
+  return $items;
+}

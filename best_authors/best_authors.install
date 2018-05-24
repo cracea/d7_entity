@@ -1,0 +1,188 @@
+<?php
+
+
+/**
+ * Implements hook_install().
+ */
+function best_authors_install() {
+  best_authors_create_role(); //add required roles
+}
+
+/**
+ * Create Best Author role
+ */
+function best_authors_create_role(){
+  $role_name = 'Best Author';
+  $load_role = user_role_load_by_name($role_name);
+
+  if (empty($load_role)){
+    $role = new stdClass();
+    $role->name = $role_name;
+    user_role_save($role);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function best_authors_uninstall() {
+
+}
+
+/**
+ * Implements hook_schema().
+ */
+function best_authors_schema() {
+  $schema = array();
+
+  $schema['best_authors'] = array(
+    'description' => 'The base table for renv_child entities.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Primary Key: Identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'Key: Identifier for revision.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => NULL,
+      ),
+      'uid' => array(
+        'description' => 'Author.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'contest_id' => array(
+        'description' => 'Contest ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'salon_id' => array(
+        'description' => 'Salon ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'best_author_id' => array(
+        'description' => 'Best Author user ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'email' => array(
+        'description' => 'Best Author email.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('id'),
+    'unique keys' => array('vid' => array('vid'),
+    ),
+
+    'indexes' => array(
+      'changed' => array('changed'),
+      'created' => array('created'),
+      'uid' => array('uid'),
+      'contest_id' => array('contest_id'),
+      'salon_id' => array('salon_id'),
+      'best_author_id' => array('best_author_id'),
+      'email' => array('email'),
+    ),
+
+  );
+
+  $schema['best_authors_revision'] = array(
+    'description' => 'The base table for renv_vaccine entities revisions.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Key: Identifier.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'vid' => array(
+        'description' => 'Key: Identifier for revision.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => NULL,
+      ),
+      'uid' => array(
+        'description' => 'Author.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'contest_id' => array(
+        'description' => 'Contest ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'salon_id' => array(
+        'description' => 'Salon ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'best_author_id' => array(
+        'description' => 'Best Author user ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'email' => array(
+        'description' => 'Best Author email.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('vid'),
+    'indexes' => array(
+      'changed' => array('changed'),
+      'created' => array('created'),
+      'uid' => array('uid'),
+      'contest_id' => array('contest_id'),
+      'salon_id' => array('salon_id'),
+      'best_author_id' => array('best_author_id'),
+      'email' => array('email'),
+    ),
+  );
+
+  return $schema;
+}
